@@ -1,0 +1,54 @@
+areart: true #리스트 정기 알림
+areartMessage: true #건당 메시지 알림
+
+blocks:
+  - DIAMOND_ORE
+  - GOLD_ORE
+  - IRON_ORE
+  - EMERALD_ORE
+  - ANCIENT_DEBRIS
+  - DEEPSLATE_DIAMOND_ORE
+  - DEEPSLATE_GOLD_ORE
+
+detection:
+  range: 10.0
+  passDistance: 5.0
+
+suspicion:
+  threshold: 100.0 # 페널티 부과 점수
+  decreaseRate: 0.5
+
+vector:
+  sight:
+    weight: 30.0
+    threshold: 60.0
+    gridMode: "dynamic"    # "static" 또는 "dynamic"
+    gridSize: 0.6         # 3x3 그리드 크기 (블록 단위)
+    centerWeight: 1.5     # 중심점 가중치 배수
+  movement:
+    weight: 25.0
+    threshold: 70.0
+  cone:
+    weight: 20.0
+    angle: 45.0
+    threshold: 50.0
+
+filtering:
+  maxExposedSides: 1        # n면 이상 노출된 블록 제외
+  enableWaterCheck: true    # 물 노출 체크 활성화
+  enableLavaCheck: true     # 용암 노출 체크 활성화
+
+advanced:
+  # DiRay 호환 고급 기능들 (PieRay 기본 기능에 추가)
+  enableWiggleDetection: true     # 와리가리 감지 활성화
+  wiggleAngleThreshold: 45.0      # 와리가리 각도 임계값 (도)
+  wiggleDistanceThreshold: 3.0    # 와리가리 최소 거리 (블록)
+  wiggleTimeThreshold: 1000       # 와리가리 시간 임계값 (밀리초)
+  wiggleCountThreshold: 3         # 의심 트리거할 와리가리 횟수
+  wiggleSuspicionBonus: 5.0       # 와리가리 보너스 점수
+
+  enableLineOfSight: true         # 시야선 검사 활성화
+  lineOfSightMaxDistance: 50      # 최대 시야선 거리
+
+  enableBlockFaceAnalysis: false  # 블록 면 분석 (3x3 대신)
+  enableAdjacentRemoval: true     # 인접 블록 자동 제거
