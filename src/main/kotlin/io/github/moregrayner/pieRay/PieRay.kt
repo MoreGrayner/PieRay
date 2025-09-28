@@ -353,6 +353,9 @@ class ConfigManager(private val plugin: PieRay) {
         if (!config.contains("advanced.enableAdjacentRemoval")) {
             config.set("advanced.enableAdjacentRemoval", true)
         }
+        if (!config.contains("advanced.enableCascadeExposure")) {
+            config.set("advanced.enableCascadeExposure", true)
+        }
 
         plugin.saveConfig()
     }
@@ -409,6 +412,7 @@ class ConfigManager(private val plugin: PieRay) {
 
     fun isBlockFaceAnalysisEnabled() = config.getBoolean("advanced.enableBlockFaceAnalysis", false)
     fun isAdjacentRemovalEnabled() = config.getBoolean("advanced.enableAdjacentRemoval", true)
+    fun isCascadeExposureEnabled() = config.getBoolean("advanced.enableCascadeExposure", true)
 }
 
 class DataManager(private val plugin: PieRay) {
@@ -772,6 +776,14 @@ class SuspicionManager(
             }
             dataManager.removeBlock(location)
 
+            if (configManager.isCascadeExposureEnabled()) {
+                cascadeExposeBlocks(location)
+            }
+
+            if (configManager.isAdjacentRemovalEnabled()) {
+                removeAdjacentBlocks(location, targetBlocks)
+            }
+
             if (configManager.isAdjacentRemovalEnabled()) {
                 removeAdjacentBlocks(location, targetBlocks)
             }
@@ -1053,6 +1065,102 @@ class SuspicionManager(
         return playerSuspicion.mapNotNull { (playerId, score) ->
             plugin.server.getPlayer(playerId)?.let { it to score }
         }.toMap()
+    }
+
+    private fun cascadeExposeBlocks(centerLocation: Location) {
+        val processedBlocks = mutableSetOf<Location>()
+        val toProcess = mutableListOf<Location>()
+        toProcess.add(centerLocation)
+
+        val dataManager = plugin.javaClass.getDeclaredField("dataManager").let { field ->
+            field.isAccessible = true
+            field.get(plugin) as DataManager
+        }
+
+        val cachedBlocks = dataManager.getCachedBlocks().toMutableMap()
+        var removedCount = 0
+
+        while (toProcess.isNotEmpty()) {
+            val currentLocation = toProcess.removeAt(0)
+
+            if (processedBlocks.contains(currentLocation)) continue
+            processedBlocks.add(currentLocation)
+
+            // 주변 26방향 블록 체크 (3x3x3에서 중심 제외)
+            for (dx in -1..1) {
+                for (dy in -1..1) {
+                    for (dz in -1..1) {
+                        if (dx == 0 && dy == 0 && dz == 0) continue
+
+                        val neighborLocation = currentLocation.clone().add(dx.toDouble(), dy.toDouble(), dz.toDouble())
+
+                        // 이미 처리했거나 캐시에 없는 블록은 건너뛰기
+                        if (processedBlocks.contains(neighborLocation) ||
+                            !cachedBlocks.containsKey(neighborLocation)) {
+                            continue
+                        }
+
+                        // 블록이 이제 노출되었는지 확인
+                        if (isBlockNowExposed(neighborLocation, cachedBlocks.keys)) {
+                            // 캐시에서 제거
+                            cachedBlocks.remove(neighborLocation)
+                            dataManager.removeBlock(neighborLocation)
+                            removedCount++
+
+                            // 연쇄 처리를 위해 큐에 추가
+                            toProcess.add(neighborLocation)
+
+                            plugin.logger.info("[PieRay-Cascade] ${neighborLocation}의 블록이 노출되어 제거되었습니다.")
+                        }
+                    }
+                }
+            }
+        }
+
+        if (removedCount > 0) {
+            plugin.logger.info("[PieRay-Cascade] 총 ${removedCount}개의 블록이 연쇄적으로 노출되어 제거되었습니다.")
+        }
+    }
+
+    private fun isExposingMaterial(material: Material): Boolean {
+        return when (material) {
+            Material.AIR -> true
+            Material.WATER -> true
+            Material.LAVA -> true
+            else -> {
+                val materialName = material.name
+                materialName.contains("WATER") ||
+                        materialName.contains("LAVA") ||
+                        materialName == "CAVE_AIR" ||
+                        materialName == "VOID_AIR"
+            }
+        }
+    }
+
+    private fun isBlockNowExposed(location: Location, remainingBlocks: Set<Location>): Boolean {
+        val directions = arrayOf(
+            Vector(1, 0, 0), Vector(-1, 0, 0),
+            Vector(0, 1, 0), Vector(0, -1, 0),
+            Vector(0, 0, 1), Vector(0, 0, -1)
+        )
+
+        var exposedSides = 0
+        val targetMaterials = configManager.getTargetBlocks()
+
+        for (direction in directions) {
+            val adjacentLocation = location.clone().add(direction)
+            val adjacentBlock = adjacentLocation.block
+
+            // 인접한 위치가 공기, 물, 용암이거나 등록된 블록이 아닌 경우 노출된 것으로 간주
+            if (isExposingMaterial(adjacentBlock.type) ||
+                (!remainingBlocks.contains(adjacentLocation) && !targetMaterials.contains(adjacentBlock.type))) {
+                exposedSides++
+            }
+        }
+
+        // 설정 가능한 노출 기준
+        val maxExposedSides = configManager.getMaxExposedSides()
+        return exposedSides >= maxExposedSides
     }
 }
 

@@ -52,3 +52,4 @@ advanced:
 
   enableBlockFaceAnalysis: false  # 블록 면 분석 (3x3 대신)
   enableAdjacentRemoval: true     # 인접 블록 자동 제거
+  enableCascadeExposure: true     # 연쇄 노출 블록 처리 활성화
