@@ -182,7 +182,7 @@ class PieRay : JavaPlugin() {
 
         dataManager.saveData()
         player.sendMessage("${ChatColor.GOLD}[${ChatColor.WHITE}PieRay${ChatColor.GOLD}]${ChatColor.WHITE} 스캔 완료!")
-        player.sendMessage("$${ChatColor.GOLD}[${ChatColor.WHITE}PieRay${ChatColor.GOLD}]${ChatColor.WHITE} 발견: ${foundBlocks}개, 등록: ${validBlocks.size}개, 제외: ${filteredBlocks}개")
+        player.sendMessage("${ChatColor.GOLD}[${ChatColor.WHITE}PieRay${ChatColor.GOLD}]${ChatColor.WHITE} 발견: ${foundBlocks}개, 등록: ${validBlocks.size}개, 제외: ${filteredBlocks}개")
         if (filteredBlocks > 0) {
             player.sendMessage("${ChatColor.GOLD}[${ChatColor.WHITE}PieRay${ChatColor.GOLD}]${ChatColor.GRAY} (노출된 블록 ${filteredBlocks}개가 제외되었습니다)")
         }
