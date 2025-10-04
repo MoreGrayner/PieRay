@@ -182,7 +182,7 @@ class PieRay : JavaPlugin() {
 
         dataManager.saveData()
         player.sendMessage("${ChatColor.GOLD}[${ChatColor.WHITE}PieRay${ChatColor.GOLD}]${ChatColor.WHITE} 스캔 완료!")
-        player.sendMessage("$${ChatColor.GOLD}[${ChatColor.WHITE}PieRay${ChatColor.GOLD}]${ChatColor.WHITE} 발견: ${foundBlocks}개, 등록: ${validBlocks.size}개, 제외: ${filteredBlocks}개")
+        player.sendMessage("${ChatColor.GOLD}[${ChatColor.WHITE}PieRay${ChatColor.GOLD}]${ChatColor.WHITE} 발견: ${foundBlocks}개, 등록: ${validBlocks.size}개, 제외: ${filteredBlocks}개")
         if (filteredBlocks > 0) {
             player.sendMessage("${ChatColor.GOLD}[${ChatColor.WHITE}PieRay${ChatColor.GOLD}]${ChatColor.GRAY} (노출된 블록 ${filteredBlocks}개가 제외되었습니다)")
         }
@@ -252,6 +252,10 @@ class PieRay : JavaPlugin() {
             }
         }
     }
+
+    fun getSuspicionManager(): SuspicionManager = suspicionManager
+    fun getDataManager(): DataManager = dataManager
+
 }
 
 class ConfigManager(private val plugin: PieRay) {
@@ -770,10 +774,7 @@ class SuspicionManager(
                 plugin.logger.info("[PieRay] ${player.name} 채굴 분석: 시야=${String.format("%.1f", sightScore)}, 동선=${String.format("%.1f", movementScore)}, 원뿔=${String.format("%.1f", coneScore)}")
             }
 
-            val dataManager = plugin.javaClass.getDeclaredField("dataManager").let { field ->
-                field.isAccessible = true
-                field.get(plugin) as DataManager
-            }
+            val dataManager = plugin.getDataManager()
             dataManager.removeBlock(location)
 
             if (configManager.isCascadeExposureEnabled()) {
@@ -1165,10 +1166,7 @@ class SuspicionManager(
 }
 
 class PieRayListener(private val plugin: PieRay) : org.bukkit.event.Listener {
-    private val suspicionManager: SuspicionManager = plugin.javaClass.getDeclaredField("suspicionManager").let { field ->
-        field.isAccessible = true
-        field.get(plugin) as SuspicionManager
-    }
+    private val suspicionManager: SuspicionManager = plugin.getSuspicionManager()
 
     @org.bukkit.event.EventHandler
     fun onBlockBreak(event: org.bukkit.event.block.BlockBreakEvent) {
