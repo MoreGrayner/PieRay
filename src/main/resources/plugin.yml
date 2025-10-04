@@ -1,7 +1,7 @@
 name: PieRay
 version: 'BETA'
 main: io.github.moregrayner.pieRay.PieRay
-api-version: '1.21'
+api-version: '1.16'
 authors: [ 짱레인 ]
 description: 벡터기반 엑스레이 탐지 플러그인
 commands:

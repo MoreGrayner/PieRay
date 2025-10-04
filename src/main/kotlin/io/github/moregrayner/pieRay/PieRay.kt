@@ -623,9 +623,6 @@ class SuspicionManager(
             val history = playerHistory.computeIfAbsent(playerId) { PlayerHistory() }
             history.setEntryPoint(player.location)
             history.addLocation(player.location)
-
-            val suspicionScore = vectorAnalyzer.calculateSuspicionScore(player, blockData, history)
-            addSuspicion(player, suspicionScore)
         }
 
         val passDistance = configManager.getPassDistance()

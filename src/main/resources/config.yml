@@ -4,9 +4,6 @@ areartMessage: true #건당 메시지 알림
 blocks:
   - DIAMOND_ORE
   - GOLD_ORE
-  - IRON_ORE
-  - EMERALD_ORE
-  - ANCIENT_DEBRIS
   - DEEPSLATE_DIAMOND_ORE
   - DEEPSLATE_GOLD_ORE
 
