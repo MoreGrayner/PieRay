@@ -119,10 +119,14 @@ advanced:
   enableBlockFaceAnalysis: false # 블록 면 분석 활성화 여부 (시야 벡터의 세부 분석)
   enableAdjacentRemoval: true # 블록 채굴 시 인접 블록 제거 활성화 여부
 ```
-### NOTE
 
-* 설정은 되도록 기본값을 사용하시길 권장합니다.
-* 이전 스캔에서 존재하지 않았던 블록은 다시 스캔을 돌려도 무시됩니다.
+---
+* ### UPDATE
+  * 엑세스 타입 변경: 리플렉션 -> getter
+
+* ### NOTE
+  * 설정은 되도록 기본값을 사용하시길 권장합니다.
+  * 이전 스캔에서 존재하지 않았던 블록은 다시 스캔을 돌려도 무시됩니다.
 
 ### Contributors
 * **[MoreGrayner](https://github.com/moregrayner)**
