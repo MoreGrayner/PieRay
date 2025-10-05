@@ -10,7 +10,7 @@
 * ### Features
   * 4개의 벡터를 이용한 엑스레이 심층 분석
   * _config_ 를 통한 세부 설정 관리
-  * _VersionHandler_ 을 이용한 호환성 자동 관리
+  * _VersionHandler_ 을 이용한 호환성 자동 관리(현재 미구현 - build.libs를 참고해주세요)
 
 * ### Supported Minecraft Versions
   * 1.21
