@@ -20,16 +20,16 @@ suspicion:
 
 vector:
   sight:
-    weight: 30.0
+    weight: 10.0
     threshold: 60.0
     gridMode: "dynamic"    # "static" 또는 "dynamic"
     gridSize: 0.6         # 3x3 그리드 크기 (블록 단위)
     centerWeight: 1.5     # 중심점 가중치 배수
   movement:
-    weight: 25.0
+    weight: 8.0
     threshold: 70.0
   cone:
-    weight: 20.0
+    weight: 6.0
     angle: 45.0
     threshold: 50.0
 
